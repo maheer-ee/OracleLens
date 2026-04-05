@@ -43,8 +43,9 @@ export type ComparisonResult = {
   comparedAt: string
   similarityScore: number
   outcome: 'match' | 'mismatch'
-  hashMatch: boolean
-  msePass: boolean
-  mse: number
-  mseThreshold: number
+  algorithm: string
+  rawMatches: number
+  geometricInliers: number
+  matchThreshold: number
+  verified: boolean
 } | null

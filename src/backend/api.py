@@ -36,9 +36,9 @@ def health():
 async def encode_image(slotId: str = Form(...), file: UploadFile = File(...)):
     try:
         image_bytes = await file.read()
-        fingerprint = build_fingerprint(image_bytes)
-        timestamp = datetime.utcnow().isoformat()
         stem = file.filename.rsplit(".", 1)[0] if file.filename else slotId
+        fingerprint = build_fingerprint(image_bytes, part_id=file.filename or slotId)
+        timestamp = datetime.now().astimezone().isoformat()
 
         return {
             "slotId": slotId,
@@ -57,22 +57,22 @@ def compare_outputs(payload: CompareRequest):
             payload.referenceFingerprint,
             payload.candidateFingerprint,
         )
-        compared_at = datetime.utcnow().isoformat()
+        compared_at = datetime.now().astimezone().isoformat()
 
         return {
             "comparisonState": "complete",
             "summary": (
-                f"Hash match: {result['hash_match']}. "
-                f"MSE pass: {result['mse_pass']}. "
-                f"MSE: {result['mse']:.2f} / {result['mse_threshold']:.2f}."
+                f"{result['geometric_inliers']} geometry-verified points "
+                f"out of {result['raw_matches']} strong matches."
             ),
             "comparedAt": compared_at,
             "similarityScore": result["similarity_score"],
             "outcome": result["outcome"],
-            "hashMatch": result["hash_match"],
-            "msePass": result["mse_pass"],
-            "mse": result["mse"],
-            "mseThreshold": result["mse_threshold"],
+            "algorithm": result["algorithm"],
+            "rawMatches": result["raw_matches"],
+            "geometricInliers": result["geometric_inliers"],
+            "matchThreshold": result["match_threshold"],
+            "verified": result["verified"],
         }
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

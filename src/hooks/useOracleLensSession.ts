@@ -227,10 +227,11 @@ export function useOracleLensSession() {
         comparedAt: new Date().toISOString(),
         similarityScore: 0,
         outcome: 'mismatch',
-        hashMatch: false,
-        msePass: false,
-        mse: 0,
-        mseThreshold: 0,
+        algorithm: 'SIFT_RANSAC',
+        rawMatches: 0,
+        geometricInliers: 0,
+        matchThreshold: 25,
+        verified: false,
       })
       return
     }
@@ -248,10 +249,11 @@ export function useOracleLensSession() {
         comparedAt: response.comparedAt,
         similarityScore: response.similarityScore,
         outcome: response.outcome,
-        hashMatch: response.hashMatch,
-        msePass: response.msePass,
-        mse: response.mse,
-        mseThreshold: response.mseThreshold,
+        algorithm: response.algorithm,
+        rawMatches: response.rawMatches,
+        geometricInliers: response.geometricInliers,
+        matchThreshold: response.matchThreshold,
+        verified: response.verified,
       })
       setSlots((currentSlots) =>
         currentSlots.map((slot) => ({
@@ -271,10 +273,11 @@ export function useOracleLensSession() {
         comparedAt: new Date().toISOString(),
         similarityScore: 0,
         outcome: 'mismatch',
-        hashMatch: false,
-        msePass: false,
-        mse: 0,
-        mseThreshold: 0,
+        algorithm: 'SIFT_RANSAC',
+        rawMatches: 0,
+        geometricInliers: 0,
+        matchThreshold: 25,
+        verified: false,
       })
     }
   }

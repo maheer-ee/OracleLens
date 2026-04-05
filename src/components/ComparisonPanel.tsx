@@ -93,6 +93,7 @@ export function ComparisonPanel({
               {comparisonResult.outcome}
             </span>
           </div>
+          <p className='mt-2'>{comparisonResult.summary}</p>
           <div
             className={`mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-sm ${
               isDarkMode ? 'text-stone-200' : 'text-stone-700'
@@ -100,32 +101,31 @@ export function ComparisonPanel({
             <p className='flex items-center justify-between gap-2'>
               <span
                 className={isDarkMode ? 'text-stone-400' : 'text-stone-500'}>
-                Hash Match:
+                Algorithm:
               </span>
               <span
                 className={isDarkMode ? 'text-stone-100' : 'text-stone-900'}>
-                {comparisonResult.hashMatch ? 'True' : 'False'}
+                {comparisonResult.algorithm}
               </span>
             </p>
             <p className='flex items-center justify-between gap-2'>
               <span
                 className={isDarkMode ? 'text-stone-400' : 'text-stone-500'}>
-                MSE Pass:
+                Verified:
               </span>
               <span
                 className={isDarkMode ? 'text-stone-100' : 'text-stone-900'}>
-                {comparisonResult.msePass ? 'True' : 'False'}
+                {comparisonResult.verified ? 'True' : 'False'}
               </span>
             </p>
             <p className='flex items-center justify-between gap-2'>
               <span
                 className={isDarkMode ? 'text-stone-400' : 'text-stone-500'}>
-                MSE:
+                Geometry:
               </span>
               <span
                 className={isDarkMode ? 'text-stone-100' : 'text-stone-900'}>
-                {comparisonResult.mse.toFixed(2)} /{' '}
-                {comparisonResult.mseThreshold.toFixed(2)}
+                {comparisonResult.geometricInliers} / {comparisonResult.matchThreshold}
               </span>
             </p>
           </div>
@@ -155,6 +155,23 @@ export function ComparisonPanel({
                 className={`text-xs font-semibold uppercase tracking-[0.14em] ${
                   isDarkMode ? 'text-stone-400' : 'text-stone-500'
                 }`}>
+                Strong Matches
+              </p>
+              <p
+                className={`mt-1 text-sm ${
+                  isDarkMode ? 'text-stone-100' : 'text-stone-900'
+                }`}>
+                {comparisonResult.rawMatches}
+              </p>
+            </div>
+            <div
+              className={`rounded-xl px-4 py-3 ${
+                isDarkMode ? 'bg-stone-800' : 'bg-white'
+              }`}>
+              <p
+                className={`text-xs font-semibold uppercase tracking-[0.14em] ${
+                  isDarkMode ? 'text-stone-400' : 'text-stone-500'
+                }`}>
                 Compared At
               </p>
               <p
@@ -169,8 +186,7 @@ export function ComparisonPanel({
             className={`mt-3 text-xs uppercase tracking-[0.14em] ${
               isDarkMode ? 'text-stone-400' : 'text-stone-500'
             }`}>
-            Raw timestamp:{' '}
-            {formatDetailedTimestamp(comparisonResult.comparedAt)}
+            Raw timestamp: {formatDetailedTimestamp(comparisonResult.comparedAt)}
           </p>
         </div>
       ) : null}

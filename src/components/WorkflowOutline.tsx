@@ -23,7 +23,7 @@ export function WorkflowOutline({
 
   return (
     <section
-      className={`rounded-[2rem] border p-5 sm:p-6 ${
+      className={`rounded-4xl border p-5 sm:p-6 ${
         isDarkMode
           ? 'border-orange-800 bg-stone-900'
           : 'border-orange-300 bg-white'

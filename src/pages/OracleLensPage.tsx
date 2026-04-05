@@ -36,14 +36,17 @@ export function OracleLensPage() {
               className={`max-w-3xl text-5xl tracking-[-0.04em] sm:text-6xl ${
                 isDarkMode ? 'text-orange-100' : 'text-orange-950'
               }`}>
-              <span style={{ fontFamily: '"Fraunces", "Times New Roman", serif' }}>
+              <span
+                style={{ fontFamily: '"Fraunces", "Times New Roman", serif' }}>
                 Oracle Lens
               </span>
             </h1>
             <button
               type='button'
               onClick={() => setIsDarkMode((current) => !current)}
-              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label={
+                isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'
+              }
               className={`inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-[999px] border text-sm font-medium transition ${
                 isDarkMode
                   ? 'border-stone-700 bg-stone-950 text-stone-100 hover:bg-stone-900'
@@ -66,7 +69,8 @@ export function OracleLensPage() {
             className={`mt-5 max-w-3xl text-base leading-7 sm:text-lg ${
               isDarkMode ? 'text-stone-300' : 'text-stone-600'
             }`}>
-            Capture two BMP images, turn them into encoded fingerprints, and compare the outputs to check for a match.
+            Capture two BMP images, turn them into encoded fingerprints, and
+            compare the outputs to check for a match.
           </p>
         </header>
 
@@ -79,7 +83,7 @@ export function OracleLensPage() {
 
         <section className='mt-8 space-y-6'>
           <div
-            className={`rounded-[2rem] border p-7 sm:p-8 ${
+            className={`rounded-4xl border p-7 sm:p-8 ${
               isDarkMode
                 ? 'border-orange-800 bg-stone-900'
                 : 'border-orange-300 bg-white'
@@ -96,7 +100,8 @@ export function OracleLensPage() {
                   className={`mt-2 max-w-3xl text-sm leading-6 ${
                     isDarkMode ? 'text-stone-300' : 'text-stone-600'
                   }`}>
-                  Add two BMP samples, encode them, and move straight to comparison.
+                  Add two BMP samples, encode them, and move straight to
+                  comparison.
                 </p>
               </div>
               <button
