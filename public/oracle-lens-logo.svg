@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="body" x1="12" y1="16" x2="54" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f7c3a0" />
+      <stop offset="0.45" stop-color="#ea7b2c" />
+      <stop offset="1" stop-color="#7c2d12" />
+    </linearGradient>
+    <linearGradient id="lens" x1="24" y1="18" x2="42" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff7ed" />
+      <stop offset="1" stop-color="#fdba74" />
+    </linearGradient>
+  </defs>
+  <rect x="11" y="18" width="35" height="28" rx="8" fill="url(#body)" />
+  <rect x="43" y="24" width="10" height="16" rx="4" fill="#431407" opacity="0.95" />
+  <rect x="16" y="15" width="8" height="4" rx="2" fill="#431407" opacity="0.65" />
+  <circle cx="29" cy="32" r="11" fill="#2a1208" opacity="0.96" />
+  <circle cx="29" cy="32" r="7.5" fill="url(#lens)" />
+  <circle cx="29" cy="32" r="4.5" fill="#7c2d12" opacity="0.9" />
+  <circle cx="33.5" cy="27.5" r="2" fill="#fff7ed" opacity="0.86" />
+  <circle cx="18.5" cy="31.5" r="1.4" fill="#fff7ed" opacity="0.75" />
+</svg>
