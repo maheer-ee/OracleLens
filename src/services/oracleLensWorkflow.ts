@@ -1,5 +1,4 @@
 import { integrationConfig } from '../config/integration'
-import { buildJsonFileName } from '../lib/captureState'
 import type {
   CompareEncodedOutputsRequest,
   CompareEncodedOutputsResponse,
@@ -15,31 +14,48 @@ export type OracleLensWorkflowService = {
   ) => Promise<CompareEncodedOutputsResponse>
 }
 
-function delay(ms: number) {
-  return new Promise<void>((resolve) => {
-    window.setTimeout(resolve, ms)
-  })
+async function readErrorMessage(response: Response) {
+  try {
+    const payload = (await response.json()) as { detail?: string }
+    return payload.detail ?? `Request failed with status ${response.status}.`
+  } catch {
+    return `Request failed with status ${response.status}.`
+  }
 }
 
-const mockOracleLensWorkflow: OracleLensWorkflowService = {
+const httpOracleLensWorkflow: OracleLensWorkflowService = {
   transport: integrationConfig.workflowTransport,
-  async encodeImage({ slotId }) {
-    await delay(500)
-    return {
-      jsonFileName: buildJsonFileName(slotId),
-      encodedAt: new Date().toISOString(),
+  async encodeImage({ slotId, file }) {
+    const formData = new FormData()
+    formData.append('slotId', slotId)
+    formData.append('file', file)
+
+    const response = await fetch(`${integrationConfig.workflowBaseUrl}/encode`, {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      throw new Error(await readErrorMessage(response))
     }
+
+    return (await response.json()) as EncodeImageResponse
   },
   async compareEncodedOutputs(request) {
-    await delay(700)
-    return {
-      comparisonState: 'complete',
-      summary: `Compared ${request.referenceJsonFileName} against ${request.candidateJsonFileName}.`,
-      comparedAt: new Date().toISOString(),
-      similarityScore: 94,
-      outcome: 'match',
+    const response = await fetch(`${integrationConfig.workflowBaseUrl}/compare`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    })
+
+    if (!response.ok) {
+      throw new Error(await readErrorMessage(response))
     }
+
+    return (await response.json()) as CompareEncodedOutputsResponse
   },
 }
 
-export const oracleLensWorkflow = mockOracleLensWorkflow
+export const oracleLensWorkflow = httpOracleLensWorkflow

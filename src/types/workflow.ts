@@ -2,17 +2,18 @@ import type { ComparisonState } from './capture'
 
 export type EncodeImageRequest = {
   slotId: 'image-a' | 'image-b'
-  bmpFileName: string
+  file: File
 }
 
 export type EncodeImageResponse = {
   jsonFileName: string
   encodedAt: string
+  fingerprint: Record<string, unknown>
 }
 
 export type CompareEncodedOutputsRequest = {
-  referenceJsonFileName: string
-  candidateJsonFileName: string
+  referenceFingerprint: Record<string, unknown>
+  candidateFingerprint: Record<string, unknown>
 }
 
 export type CompareEncodedOutputsResponse = {
@@ -21,4 +22,8 @@ export type CompareEncodedOutputsResponse = {
   comparedAt: string
   similarityScore: number
   outcome: 'match' | 'mismatch'
+  hashMatch: boolean
+  msePass: boolean
+  mse: number
+  mseThreshold: number
 }

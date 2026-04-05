@@ -18,8 +18,8 @@ export function OracleLensPage() {
     sessionStatus,
     slots,
     handleCompare,
+    handleAttachFile,
     handleConnectCamera,
-    handleCapture,
     handleEncode,
     handleResetError,
     handleResetSession,
@@ -49,7 +49,12 @@ export function OracleLensPage() {
               cameraName={cameraName}
               integrationStatus={flirBlackFlyCamera.integrationStatus}
               transport={flirBlackFlyCamera.transport}
-              notes={flirBlackFlyCamera.notes}
+              notes={
+                integrationConfig.manualUploadTesting
+                  ? 'Camera integration is disabled for testing. Attach BMP files manually and use the backend encode and compare endpoints from the UI.'
+                  : flirBlackFlyCamera.notes
+              }
+              connectDisabled={integrationConfig.manualUploadTesting}
               onConnect={handleConnectCamera}
             />
 
@@ -86,7 +91,7 @@ export function OracleLensPage() {
                       'encode',
                     )}
                     actionHint={sessionStatus.flowLabel}
-                    onCapture={handleCapture}
+                    onAttachFile={handleAttachFile}
                     onEncode={handleEncode}
                     onResetError={handleResetError}
                   />

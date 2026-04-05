@@ -69,6 +69,24 @@ export function ComparisonPanel({
                 {formatTimestamp(comparisonResult.comparedAt)}
               </p>
             </div>
+            <div className="rounded-xl bg-white px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">
+                Hash Match
+              </p>
+              <p className="mt-1 text-sm text-stone-900">
+                {comparisonResult.hashMatch ? 'True' : 'False'}
+              </p>
+            </div>
+            <div className="rounded-xl bg-white px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-500">
+                MSE Check
+              </p>
+              <p className="mt-1 text-sm text-stone-900">
+                {comparisonResult.msePass
+                  ? `Pass (${comparisonResult.mse.toFixed(2)} / ${comparisonResult.mseThreshold.toFixed(2)})`
+                  : `Fail (${comparisonResult.mse.toFixed(2)} / ${comparisonResult.mseThreshold.toFixed(2)})`}
+              </p>
+            </div>
           </div>
           <p className="mt-3 text-xs uppercase tracking-[0.14em] text-stone-500">
             Raw timestamp: {comparisonResult.comparedAt}

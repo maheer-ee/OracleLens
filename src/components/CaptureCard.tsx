@@ -7,7 +7,7 @@ type CaptureCardProps = {
   canCapture: boolean
   canEncode: boolean
   actionHint: string
-  onCapture: (slotId: CaptureSlot['id']) => void
+  onAttachFile: (slotId: CaptureSlot['id'], file: File | null) => void
   onEncode: (slotId: CaptureSlot['id']) => void
   onResetError: (slotId: CaptureSlot['id']) => void
 }
@@ -17,14 +17,12 @@ export function CaptureCard({
   canCapture,
   canEncode,
   actionHint,
-  onCapture,
+  onAttachFile,
   onEncode,
   onResetError,
 }: CaptureCardProps) {
   const showReset = slot.stage === 'error'
-  const captureLabel = slot.isBusy && slot.stage === 'capturing_bmp'
-    ? 'Capturing BMP...'
-    : 'Capture BMP'
+  const captureLabel = slot.selectedFile ? 'Replace BMP' : 'Attach BMP'
   const encodeLabel = slot.isBusy && slot.stage === 'encoding_json'
     ? 'Encoding JSON...'
     : 'Encode to JSON'
@@ -59,6 +57,10 @@ export function CaptureCard({
           <dd className="mt-1">{actionHint}</dd>
         </div>
         <div className="rounded-2xl bg-white/80 px-4 py-3">
+          <dt className="font-medium text-stone-900">Attached file</dt>
+          <dd className="mt-1">{slot.selectedFile?.name ?? 'No file attached'}</dd>
+        </div>
+        <div className="rounded-2xl bg-white/80 px-4 py-3">
           <dt className="font-medium text-stone-900">BMP output</dt>
           <dd className="mt-1">{slot.bmpFileName ?? 'Not captured yet'}</dd>
         </div>
@@ -85,12 +87,25 @@ export function CaptureCard({
       <div className="mt-6 flex flex-wrap gap-3">
         <button
           type="button"
-          onClick={() => onCapture(slot.id)}
+          onClick={() =>
+            document.getElementById(`bmp-upload-${slot.id}`)?.click()
+          }
           disabled={!canCapture || slot.isBusy}
           className="cursor-pointer rounded-xl border border-orange-200 bg-orange-100 px-4 py-2.5 text-sm font-medium text-orange-700 disabled:cursor-not-allowed disabled:border-orange-100 disabled:bg-orange-50 disabled:text-orange-400"
         >
           {captureLabel}
         </button>
+        <input
+          id={`bmp-upload-${slot.id}`}
+          type="file"
+          accept=".bmp,image/bmp"
+          className="hidden"
+          onChange={(event) => {
+            const file = event.target.files?.[0] ?? null
+            onAttachFile(slot.id, file)
+            event.currentTarget.value = ''
+          }}
+        />
         <button
           type="button"
           onClick={() => onEncode(slot.id)}

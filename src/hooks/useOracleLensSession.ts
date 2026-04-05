@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { integrationConfig } from '../config/integration'
 import { initialCaptureSlots } from '../data/initialCaptureSlots'
 import { buildStageMessage, updateSlot } from '../lib/captureState'
 import { deriveSessionStatus, isSlotActionAllowed } from '../lib/sessionFlow'
@@ -25,6 +26,7 @@ export function useOracleLensSession() {
     slots,
     cameraConnectionState,
     comparisonState,
+    integrationConfig.manualUploadTesting,
   )
 
   function syncComparisonState(nextSlots: CaptureSlot[]) {
@@ -43,10 +45,12 @@ export function useOracleLensSession() {
     setSlots((currentSlots) => {
       const nextSlots = updateSlot(currentSlots, slotId, (slot) => ({
         ...slot,
+        selectedFile: preserveOutputs ? slot.selectedFile : null,
         bmpFileName: preserveOutputs ? slot.bmpFileName : null,
         jsonFileName: preserveOutputs ? slot.jsonFileName : null,
         capturedAt: preserveOutputs ? slot.capturedAt : null,
         encodedAt: preserveOutputs ? slot.encodedAt : null,
+        fingerprintData: preserveOutputs ? slot.fingerprintData : null,
         stage: 'error',
         statusMessage: buildStageMessage('error'),
         errorMessage: message,
@@ -66,6 +70,10 @@ export function useOracleLensSession() {
   }
 
   async function handleConnectCamera() {
+    if (integrationConfig.manualUploadTesting) {
+      return
+    }
+
     if (
       cameraConnectionState === 'connecting' ||
       cameraConnectionState === 'connected'
@@ -93,7 +101,11 @@ export function useOracleLensSession() {
     }
   }
 
-  async function handleCapture(slotId: CaptureSlot['id']) {
+  function handleAttachFile(slotId: CaptureSlot['id'], file: File | null) {
+    if (!file) {
+      return
+    }
+
     if (!isSlotActionAllowed(sessionStatus, slotId, 'capture')) {
       return
     }
@@ -102,36 +114,21 @@ export function useOracleLensSession() {
     setSlots((currentSlots) => {
       const nextSlots = updateSlot(currentSlots, slotId, (slot) => ({
         ...slot,
-        stage: 'capturing_bmp',
+        selectedFile: file,
+        bmpFileName: file.name,
+        capturedAt: new Date().toISOString(),
         jsonFileName: null,
         encodedAt: null,
-        statusMessage: buildStageMessage('capturing_bmp'),
+        fingerprintData: null,
+        stage: 'ready_to_capture',
+        statusMessage: 'BMP file attached. Ready to encode JSON.',
         errorMessage: null,
-        isBusy: true,
+        isBusy: false,
         attemptCount: slot.attemptCount + 1,
       }))
       syncComparisonState(nextSlots)
       return nextSlots
     })
-
-    try {
-      const response = await flirBlackFlyCamera.captureBmp({ slotId })
-      setSlots((currentSlots) => {
-        const nextSlots = updateSlot(currentSlots, slotId, (slot) => ({
-          ...slot,
-          bmpFileName: response.bmpFileName,
-          capturedAt: response.capturedAt,
-          stage: 'ready_to_capture',
-          statusMessage: 'BMP capture complete. Ready to encode JSON.',
-          errorMessage: null,
-          isBusy: false,
-        }))
-        syncComparisonState(nextSlots)
-        return nextSlots
-      })
-    } catch {
-      setSlotError(slotId, 'BMP capture failed. Retry the camera capture step.')
-    }
   }
 
   async function handleEncode(slotId: CaptureSlot['id']) {
@@ -140,13 +137,13 @@ export function useOracleLensSession() {
     }
 
     const currentSlot = slots.find((slot) => slot.id === slotId)
-    if (!currentSlot?.bmpFileName) {
+    if (!currentSlot?.selectedFile) {
       setSlots((currentSlots) => {
         const nextSlots = updateSlot(currentSlots, slotId, (slot) => ({
           ...slot,
           stage: 'error',
           statusMessage: buildStageMessage('error'),
-          errorMessage: 'Capture a BMP image before encoding to JSON.',
+          errorMessage: 'Attach a BMP image before encoding to JSON.',
         }))
         syncComparisonState(nextSlots)
         return nextSlots
@@ -171,7 +168,7 @@ export function useOracleLensSession() {
     try {
       const response = await oracleLensWorkflow.encodeImage({
         slotId,
-        bmpFileName: currentSlot.bmpFileName,
+        file: currentSlot.selectedFile,
       })
       setSlots((currentSlots) => {
         const nextSlots = updateSlot(currentSlots, slotId, (slot) => ({
@@ -179,6 +176,7 @@ export function useOracleLensSession() {
           stage: 'ready_for_comparison',
           jsonFileName: response.jsonFileName,
           encodedAt: response.encodedAt,
+          fingerprintData: response.fingerprint,
           statusMessage: buildStageMessage('ready_for_comparison'),
           errorMessage: null,
           isBusy: false,
@@ -186,10 +184,12 @@ export function useOracleLensSession() {
         syncComparisonState(nextSlots)
         return nextSlots
       })
-    } catch {
+    } catch (error) {
       setSlotError(
         slotId,
-        'JSON encoding failed. Retry encoding with the existing BMP output.',
+        `JSON encoding failed. ${
+          error instanceof Error ? error.message : 'Retry with the attached BMP file.'
+        }`,
       )
     }
   }
@@ -220,13 +220,17 @@ export function useOracleLensSession() {
     const referenceSlot = slots.find((slot) => slot.id === 'image-a')
     const candidateSlot = slots.find((slot) => slot.id === 'image-b')
 
-    if (!referenceSlot?.jsonFileName || !candidateSlot?.jsonFileName) {
+    if (!referenceSlot?.fingerprintData || !candidateSlot?.fingerprintData) {
       setComparisonState('error')
       setComparisonResult({
         summary: 'Both JSON outputs must exist before comparison can start.',
         comparedAt: new Date().toISOString(),
         similarityScore: 0,
         outcome: 'mismatch',
+        hashMatch: false,
+        msePass: false,
+        mse: 0,
+        mseThreshold: 0,
       })
       return
     }
@@ -235,8 +239,8 @@ export function useOracleLensSession() {
     setComparisonResult(null)
     try {
       const response = await oracleLensWorkflow.compareEncodedOutputs({
-        referenceJsonFileName: referenceSlot.jsonFileName,
-        candidateJsonFileName: candidateSlot.jsonFileName,
+        referenceFingerprint: referenceSlot.fingerprintData,
+        candidateFingerprint: candidateSlot.fingerprintData,
       })
       setComparisonState(response.comparisonState)
       setComparisonResult({
@@ -244,6 +248,10 @@ export function useOracleLensSession() {
         comparedAt: response.comparedAt,
         similarityScore: response.similarityScore,
         outcome: response.outcome,
+        hashMatch: response.hashMatch,
+        msePass: response.msePass,
+        mse: response.mse,
+        mseThreshold: response.mseThreshold,
       })
       setSlots((currentSlots) =>
         currentSlots.map((slot) => ({
@@ -252,14 +260,21 @@ export function useOracleLensSession() {
           statusMessage: buildStageMessage('comparison_complete'),
         })),
       )
-    } catch {
+    } catch (error) {
       setComparisonState('retryable')
       setComparisonResult({
-        summary:
-          'Comparison failed. Existing encoded outputs are still available for retry.',
+        summary: `Comparison failed. ${
+          error instanceof Error
+            ? error.message
+            : 'Existing encoded outputs are still available for retry.'
+        }`,
         comparedAt: new Date().toISOString(),
         similarityScore: 0,
         outcome: 'mismatch',
+        hashMatch: false,
+        msePass: false,
+        mse: 0,
+        mseThreshold: 0,
       })
     }
   }
@@ -271,9 +286,9 @@ export function useOracleLensSession() {
     comparisonState,
     sessionStatus,
     slots,
+    handleAttachFile,
     handleCompare,
     handleConnectCamera,
-    handleCapture,
     handleEncode,
     handleResetError,
     handleResetSession,

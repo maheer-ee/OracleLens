@@ -6,6 +6,7 @@ type CameraStatusBannerProps = {
   integrationStatus: string
   transport: string
   notes: string
+  connectDisabled: boolean
   onConnect: () => void
 }
 
@@ -17,7 +18,7 @@ const connectionLabel: Record<CameraConnectionState, string> = {
 }
 
 const connectionMessage: Record<CameraConnectionState, string> = {
-  disconnected: 'The frontend is waiting for a camera session to begin.',
+  disconnected: 'Camera connection is disabled for testing. Attach BMP files manually to continue.',
   connecting: 'This is a placeholder connection step for the upcoming camera integration.',
   connected: 'The UI is ready to allow BMP capture actions for both image slots.',
   error: 'The camera did not connect. Retry the UI flow before wiring real hardware logic.',
@@ -29,10 +30,12 @@ export function CameraStatusBanner({
   integrationStatus,
   transport,
   notes,
+  connectDisabled,
   onConnect,
 }: CameraStatusBannerProps) {
   const isBusy = connectionState === 'connecting'
   const isConnected = connectionState === 'connected'
+  const buttonDisabled = connectDisabled || isBusy || isConnected
 
   return (
     <section className="rounded-[2rem] border border-orange-100 bg-white/85 p-7 shadow-[0_16px_60px_rgba(251,146,60,0.08)] sm:p-8">
@@ -72,10 +75,16 @@ export function CameraStatusBanner({
         <button
           type="button"
           onClick={onConnect}
-          disabled={isBusy || isConnected}
+          disabled={buttonDisabled}
           className="cursor-pointer rounded-xl border border-orange-200 bg-orange-100 px-4 py-2.5 text-sm font-medium text-orange-700 disabled:cursor-not-allowed disabled:border-orange-100 disabled:bg-orange-50 disabled:text-orange-400"
         >
-          {isConnected ? 'Camera Ready' : isBusy ? 'Connecting...' : 'Connect Camera'}
+          {connectDisabled
+            ? 'Camera Disabled'
+            : isConnected
+              ? 'Camera Ready'
+              : isBusy
+                ? 'Connecting...'
+                : 'Connect Camera'}
         </button>
       </div>
     </section>

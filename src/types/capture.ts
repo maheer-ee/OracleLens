@@ -11,10 +11,12 @@ export type CaptureStage =
 export type CaptureSlot = {
   id: 'image-a' | 'image-b'
   label: string
+  selectedFile: File | null
   bmpFileName: string | null
   jsonFileName: string | null
   capturedAt: string | null
   encodedAt: string | null
+  fingerprintData: Record<string, unknown> | null
   stage: CaptureStage
   statusMessage: string
   errorMessage: string | null
@@ -41,4 +43,8 @@ export type ComparisonResult = {
   comparedAt: string
   similarityScore: number
   outcome: 'match' | 'mismatch'
+  hashMatch: boolean
+  msePass: boolean
+  mse: number
+  mseThreshold: number
 } | null

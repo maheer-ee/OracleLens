@@ -17,8 +17,9 @@ export function deriveSessionStatus(
   slots: CaptureSlot[],
   cameraConnectionState: CameraConnectionState,
   comparisonState: ComparisonState,
+  manualUploadEnabled = false,
 ): SessionStatus {
-  if (cameraConnectionState !== 'connected') {
+  if (!manualUploadEnabled && cameraConnectionState !== 'connected') {
     return {
       activeStepId: 'connect_camera',
       flowLabel: 'Connect the camera to start the capture session.',
@@ -48,7 +49,9 @@ export function deriveSessionStatus(
   if (!referenceSlot.bmpFileName) {
     return {
       activeStepId: 'capture_reference',
-      flowLabel: 'Capture the reference BMP image first.',
+      flowLabel: manualUploadEnabled
+        ? 'Attach the reference BMP image first.'
+        : 'Capture the reference BMP image first.',
       comparisonState: 'blocked',
       permissionsBySlot: {
         'image-a': buildPermissions(true, false),
@@ -72,7 +75,9 @@ export function deriveSessionStatus(
   if (!candidateSlot.bmpFileName) {
     return {
       activeStepId: 'capture_candidate',
-      flowLabel: 'Capture the candidate BMP after the reference image is fully encoded.',
+      flowLabel: manualUploadEnabled
+        ? 'Attach the candidate BMP after the reference image is fully encoded.'
+        : 'Capture the candidate BMP after the reference image is fully encoded.',
       comparisonState: 'blocked',
       permissionsBySlot: {
         'image-a': buildPermissions(false, false),
