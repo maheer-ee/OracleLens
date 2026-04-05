@@ -79,7 +79,7 @@ export function ComparisonPanel({
         type="button"
         onClick={onCompare}
         disabled={!canCompare}
-        className="mt-6 w-full rounded-2xl border border-stone-200 bg-stone-100 px-4 py-3 text-sm font-medium text-stone-500 disabled:cursor-not-allowed disabled:border-stone-100 disabled:bg-stone-50 disabled:text-stone-400"
+        className="mt-6 w-full cursor-pointer rounded-2xl border border-stone-200 bg-stone-100 px-4 py-3 text-sm font-medium text-stone-500 disabled:cursor-not-allowed disabled:border-stone-100 disabled:bg-stone-50 disabled:text-stone-400"
       >
         {comparisonState === 'comparing'
           ? 'Comparing Encoded Outputs...'

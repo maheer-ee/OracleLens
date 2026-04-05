@@ -30,7 +30,7 @@ export function CaptureCard({
     : 'Encode to JSON'
 
   return (
-    <article className="rounded-[1.5rem] border border-orange-100 bg-gradient-to-b from-white to-orange-50/40 p-6">
+    <article className="flex h-full flex-col rounded-[1.5rem] border border-orange-100 bg-gradient-to-b from-white to-orange-50/40 p-6">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium uppercase tracking-[0.16em] text-orange-700">
@@ -45,7 +45,7 @@ export function CaptureCard({
         </span>
       </div>
 
-      <dl className="mt-6 space-y-4 text-sm text-stone-600">
+      <dl className="mt-6 grid flex-1 gap-4 text-sm text-stone-600 sm:grid-cols-2">
         <div className="rounded-2xl bg-white/80 px-4 py-3">
           <dt className="font-medium text-stone-900">Status</dt>
           <dd className="mt-1">{slot.statusMessage}</dd>
@@ -87,7 +87,7 @@ export function CaptureCard({
           type="button"
           onClick={() => onCapture(slot.id)}
           disabled={!canCapture || slot.isBusy}
-          className="rounded-xl border border-orange-200 bg-orange-100 px-4 py-2.5 text-sm font-medium text-orange-700 disabled:cursor-not-allowed disabled:border-orange-100 disabled:bg-orange-50 disabled:text-orange-400"
+          className="cursor-pointer rounded-xl border border-orange-200 bg-orange-100 px-4 py-2.5 text-sm font-medium text-orange-700 disabled:cursor-not-allowed disabled:border-orange-100 disabled:bg-orange-50 disabled:text-orange-400"
         >
           {captureLabel}
         </button>
@@ -95,7 +95,7 @@ export function CaptureCard({
           type="button"
           onClick={() => onEncode(slot.id)}
           disabled={!canEncode || slot.isBusy}
-          className="rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-medium text-stone-500 disabled:cursor-not-allowed disabled:border-stone-100 disabled:bg-stone-50 disabled:text-stone-400"
+          className="cursor-pointer rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-medium text-stone-500 disabled:cursor-not-allowed disabled:border-stone-100 disabled:bg-stone-50 disabled:text-stone-400"
         >
           {encodeLabel}
         </button>
@@ -103,7 +103,7 @@ export function CaptureCard({
           <button
             type="button"
             onClick={() => onResetError(slot.id)}
-            className="rounded-xl border border-rose-200 bg-white px-4 py-2.5 text-sm font-medium text-rose-700"
+            className="cursor-pointer rounded-xl border border-rose-200 bg-white px-4 py-2.5 text-sm font-medium text-rose-700"
           >
             Clear Error
           </button>

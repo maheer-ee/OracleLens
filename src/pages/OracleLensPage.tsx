@@ -70,7 +70,7 @@ export function OracleLensPage() {
                 </div>
               </div>
 
-              <div className="mt-8 grid gap-5 xl:grid-cols-2">
+              <div className="mt-8 grid gap-5 xl:grid-cols-2 xl:auto-rows-fr">
                 {slots.map((slot) => (
                   <CaptureCard
                     key={slot.id}
@@ -94,7 +94,6 @@ export function OracleLensPage() {
               </div>
             </div>
 
-            <SessionSummary slots={slots} />
             <SystemStatusPanel
               cameraConnectionState={cameraConnectionState}
               comparisonState={comparisonState}
@@ -111,6 +110,7 @@ export function OracleLensPage() {
               flowLabel={`${sessionStatus.flowLabel} Workflow transport: ${integrationConfig.workflowTransport}.`}
               onCompare={handleCompare}
             />
+            <SessionSummary slots={slots} />
           </aside>
         </section>
       </section>

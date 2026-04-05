@@ -73,7 +73,7 @@ export function CameraStatusBanner({
           type="button"
           onClick={onConnect}
           disabled={isBusy || isConnected}
-          className="rounded-xl border border-orange-200 bg-orange-100 px-4 py-2.5 text-sm font-medium text-orange-700 disabled:cursor-not-allowed disabled:border-orange-100 disabled:bg-orange-50 disabled:text-orange-400"
+          className="cursor-pointer rounded-xl border border-orange-200 bg-orange-100 px-4 py-2.5 text-sm font-medium text-orange-700 disabled:cursor-not-allowed disabled:border-orange-100 disabled:bg-orange-50 disabled:text-orange-400"
         >
           {isConnected ? 'Camera Ready' : isBusy ? 'Connecting...' : 'Connect Camera'}
         </button>

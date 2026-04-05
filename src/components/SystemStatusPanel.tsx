@@ -27,7 +27,7 @@ export function SystemStatusPanel({
         <button
           type="button"
           onClick={onResetSession}
-          className="rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-medium text-stone-700"
+          className="cursor-pointer rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm font-medium text-stone-700"
         >
           Reset Session
         </button>
